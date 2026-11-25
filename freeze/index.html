@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file:; style-src 'self' file:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>电脑急诊 · 卡死与重启时间线</title>
+  <link rel="stylesheet" href="freeze.css">
+  <script defer src="freeze-core.js"></script>
+  <script defer src="freeze-ui.js"></script>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">电脑急诊 · V0.7 浏览器预览</p>
+    <a href="../index.html">返回网络诊断</a>
+    <h1>卡死与重启时间线</h1>
+    <p>区分 Windows 的异常关机标记、蓝屏证据，以及时间接近的存储或应用记录。不推断原因，不执行修复。</p>
+  </header>
+  <section class="controls" aria-label="选择事件摘要">
+    <button id="demo" type="button">查看合成样例</button>
+    <label for="summary-file">选择导出的精简摘要（JSON）</label>
+    <input id="summary-file" type="file" accept=".json,application/json">
+    <button id="clear" type="button">清空结果</button>
+    <p class="note">不读事件查看器、不上传、不保存。此包不附带 Windows 采集。没有兼容摘要可先看样例，不要导入原始日志和转储。文件最多 256 KiB。</p>
+    <p id="status" role="status" aria-live="polite">尚未载入摘要。</p>
+  </section>
+  <section id="results" aria-label="分析结果" hidden>
+    <p id="mode"></p>
+    <div class="cards">
+      <div><h2>异常重启标记</h2><p id="reboot"></p></div>
+      <div><h2>蓝屏证据</h2><p id="bugcheck"></p></div>
+    </div>
+    <p id="coverage"></p>
+    <p class="note">“未知”表示这份摘要没有足够的标记，不表示没有发生。多条标记可能来自同一次启动。报时不是卡死、蓝屏或关机发生的精确时刻；报时前后 5 分钟内的条目不是根因证据。</p>
+    <h2>记录时间线（UTC）</h2>
+    <p id="empty" hidden>摘要中没有可展示的记录。</p>
+    <ol id="timeline"></ol>
+  </section>
+</main>
+</body>
+</html>

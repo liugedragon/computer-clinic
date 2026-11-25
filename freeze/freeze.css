@@ -1,0 +1,19 @@
+:root { color-scheme: light dark; --card: light-dark(#edf6f8, #172d36); --border: light-dark(#527282, #7a9baa); --ink: light-dark(#102a33, #ecf7fb); }
+body { margin: 0; font-family: system-ui, sans-serif; color: var(--ink); }
+main { max-width: 54rem; margin: auto; padding: clamp(1rem, 4vw, 3rem); }
+h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 3rem); }
+h2 { font-size: 1.18rem; }
+p, li { line-height: 1.55; }
+.eyebrow { font-weight: 700; letter-spacing: .04em; }
+.controls, .cards > div { padding: 1rem; background: var(--card); border: 1px solid var(--border); border-radius: .65rem; }
+.controls button, input { margin: .3rem .6rem .3rem 0; padding: .4rem; max-width: 100%; font: inherit; }
+.controls label { display: inline-block; font-weight: 700; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: .7rem; }
+.cards h2, .cards p { margin: .25rem 0; }
+.note { font-size: .94rem; }
+#timeline { padding-left: 1.6rem; }
+#timeline > li { margin: .6rem 0; border-bottom: 1px solid var(--border); padding-bottom: .5rem; overflow-wrap: anywhere; }
+time, code { font-family: ui-monospace, monospace; }
+details { margin-top: .3rem; }
+summary { cursor: pointer; width: fit-content; }
+:focus-visible { outline: 2px solid var(--border); outline-offset: .2rem; }
