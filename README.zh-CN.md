@@ -17,7 +17,9 @@
 
 Linux 用户可以使用浏览器里的网络、键盘和屏幕工具，详见 [Linux 排查指南](docs/linux.md#简体中文)。重启工具可以看演示，但只接受 Windows 格式摘要，不读取 Linux 日志。
 
-这一版不包含 Windows 自动采集脚本或 EXE，不会自动修改设置，也不会上传诊断结果。四项工具已在 [GitHub 托管的 Windows Server 2025 上用 Edge 完成离线测试](https://github.com/liugedragon/computer-clinic/actions/runs/45832501538)，英文和简体中文均通过。测试使用模拟按键和样例文件，尚未在 Windows 11 实机、实体键盘或显示器上验证。
+这一版不包含 Windows 自动采集脚本或 EXE，不会自动修改设置，也不会上传诊断结果。
+
+四项工具的 [Edge 离线自动测试](https://github.com/liugedragon/computer-clinic/actions/runs/45870061415) 已在 GitHub 托管的 Windows Server 2025 和 Ubuntu 24.04 上通过，覆盖英文和简体中文。测试包括网络和重启样例导入、模拟按键及全屏颜色显示，未在 Windows 11 实机、实体键盘或显示器上验证，也未使用真实系统日志。
 
 ## 欢迎贡献 · Contributions welcome
 
