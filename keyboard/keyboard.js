@@ -1,5 +1,7 @@
 (() => {
   "use strict";
+  // Use the language of the current offline HTML page.
+  const msg = (zh, en) => globalThis.document?.documentElement.lang === "en" ? en : zh;
 
   // Only codes in this fixed physical-layout allowlist enter application state.
   const fn = Array.from({length: 12}, (_, i) => ["F" + (i + 1), "F" + (i + 1)]);
@@ -11,10 +13,10 @@
     [["Backquote", "`"], ...digits, ["Minus", "−"], ["Equal", "="], ["Backspace", "Backspace", 2]],
     [["Tab", "Tab", 1.5], ...letters("QWERTYUIOP"), ["BracketLeft", "["], ["BracketRight", "]"], ["Backslash", "\\", 1.5]],
     [["CapsLock", "Caps Lock", 1.75], ...letters("ASDFGHJKL"), ["Semicolon", ";"], ["Quote", "'"], ["Enter", "Enter", 2.25]],
-    [["ShiftLeft", "左 Shift", 2.25], ...letters("ZXCVBNM"), ["Comma", ","], ["Period", "."], ["Slash", "/"], ["ShiftRight", "右 Shift", 2.75]],
-    [["ControlLeft", "左 Ctrl", 1.25], ["MetaLeft", "左 Win", 1.25], ["AltLeft", "左 Alt", 1.25],
-      ["Space", "空格", 6.25], ["AltRight", "右 Alt", 1.25], ["MetaRight", "右 Win", 1.25],
-      ["ContextMenu", "菜单", 1.25], ["ControlRight", "右 Ctrl", 1.25]],
+    [["ShiftLeft", msg("左 Shift", "Left Shift"), 2.25], ...letters("ZXCVBNM"), ["Comma", ","], ["Period", "."], ["Slash", "/"], ["ShiftRight", msg("右 Shift", "Right Shift"), 2.75]],
+    [["ControlLeft", msg("左 Ctrl", "Left Ctrl"), 1.25], ["MetaLeft", msg("左 Win", "Left Win"), 1.25], ["AltLeft", msg("左 Alt", "Left Alt"), 1.25],
+      ["Space", msg("空格", "Space"), 6.25], ["AltRight", msg("右 Alt", "Right Alt"), 1.25], ["MetaRight", msg("右 Win", "Right Win"), 1.25],
+      ["ContextMenu", msg("菜单", "Menu"), 1.25], ["ControlRight", msg("右 Ctrl", "Right Ctrl"), 1.25]],
   ];
   // Tuple: code, visible label, column, row, optional column span, optional row span.
   const nav = [
@@ -62,7 +64,7 @@
     const key = el("span", "key", label);
     key.dataset.code = code;
     // Prevent both arbitrary display values and ambiguity between main / numpad keys.
-    cells.set(code, {key, label: isNumpad ? "数字区 " + label : label, isNumpad});
+    cells.set(code, {key, label: isNumpad ? msg("数字区 ", "Number pad ") + label : label, isNumpad});
     return key;
   }
 
@@ -98,7 +100,7 @@
     seenOutput.textContent = visibleSeen.length;
     totalOutput.textContent = compact ? cells.size - num.length : cells.size;
     lastOutput.textContent = lastCode && (!compact || !cells.get(lastCode).isNumpad)
-      ? cells.get(lastCode).label : "无";
+      ? cells.get(lastCode).label : msg("无", "None");
   }
 
   function clearHeld() {
@@ -121,16 +123,16 @@
     clearHeld();
     capture.classList.remove("active");
     start.disabled = false;
-    start.textContent = "继续检测";
+    start.textContent = msg("继续检测", "Resume test");
     stop.disabled = true;
-    status.textContent = "已暂停 · " + reason;
+    status.textContent = msg("已暂停 · ", "Paused · ") + reason;
   }
 
-  function onFocusLoss() { pause("焦点已离开检测区。"); }
-  function onWindowBlur() { pause("窗口失去焦点。"); }
-  function onPageHide() { pause("已离开页面。"); }
+  function onFocusLoss() { pause(msg("焦点已离开检测区。", "Focus left the test area.")); }
+  function onWindowBlur() { pause(msg("窗口失去焦点。", "The window lost focus.")); }
+  function onPageHide() { pause(msg("已离开页面。", "You left the page.")); }
   function onVisibilityChange() {
-    if (document.visibilityState !== "visible") pause("页面已切换到后台。");
+    if (document.visibilityState !== "visible") pause(msg("页面已切换到后台。", "The tab moved to the background."));
   }
   function onCompositionStart() {
     composing = true;
@@ -151,7 +153,7 @@
       count();
     }
     if (event.code === "Escape" && !event.ctrlKey && !event.altKey && !event.metaKey) {
-      pause("按下 Esc。");
+      pause(msg("按下 Esc。", "Esc was pressed."));
       start.focus({preventScroll: true});
     }
     // Do not prevent Tab, function keys, browser/system modifier shortcuts,
@@ -171,14 +173,14 @@
     if (active || document.visibilityState !== "visible") return;
     capture.focus({preventScroll: true});
     if (document.activeElement !== capture) {
-      status.textContent = "未开始 · 无法取得检测区焦点，请重试。";
+      status.textContent = msg("未开始 · 无法取得检测区焦点，请重试。", "Not started · Could not focus the test area. Try again.");
       return;
     }
     active = true;
     composing = false;
     start.disabled = true;
     stop.disabled = false;
-    status.textContent = "检测中 · 请按下想检查的键。";
+    status.textContent = msg("检测中 · 请按下想检查的键。", "Testing · Press the keys you want to check.");
     capture.classList.add("active");
     capture.addEventListener("keydown", onKeyDown);
     capture.addEventListener("keyup", onKeyUp);
@@ -192,21 +194,21 @@
   // Prevent a pointer press on Pause from blurring capture before click has a chance to run.
   stop.addEventListener("mousedown", (event) => { if (active) event.preventDefault(); });
   stop.addEventListener("click", () => {
-    pause("可继续检测或清空记录。");
+    pause(msg("可继续检测或清空记录。", "Resume the test or clear the marks."));
     start.focus({preventScroll: true});
   });
   reset.addEventListener("click", () => {
-    pause("已清空。");
+    pause(msg("已清空。", "Cleared."));
     for (const code of seen) cells.get(code).key.classList.remove("done");
     seen.clear();
     lastCode = "";
     count();
-    start.textContent = "开始检测";
-    status.textContent = "已清空 · 请点击「开始检测」。";
+    start.textContent = msg("开始检测", "Start test");
+    status.textContent = msg("已清空 · 请点击「开始检测」。", "Cleared · Select Start test.");
   });
-  exit.addEventListener("click", () => { pause("已返回工具首页。"); });
+  exit.addEventListener("click", () => { pause(msg("已返回工具首页。", "Returned to tool home.")); });
   layout.addEventListener("change", () => {
-    pause("布局已切换，可继续检测。");
+    pause(msg("布局已切换，可继续检测。", "Layout changed. You can resume the test."));
     numGrid.hidden = layout.value === "compact";
     board.classList.toggle("compact", numGrid.hidden);
     count();

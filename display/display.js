@@ -1,9 +1,11 @@
 "use strict";
 
 (() => {
+  // Use the language of the current offline HTML page.
+  const msg = (zh, en) => globalThis.document?.documentElement.lang === "en" ? en : zh;
   const colors = [
-    ["black", "黑色"], ["white", "白色"], ["red", "红色"],
-    ["green", "绿色"], ["blue", "蓝色"], ["gray", "灰色"]
+    ["black", msg("黑色", "Black")], ["white", msg("白色", "White")], ["red", msg("红色", "Red")],
+    ["green", msg("绿色", "Green")], ["blue", msg("蓝色", "Blue")], ["gray", msg("灰色", "Gray")]
   ];
   const $ = (id) => document.getElementById(id);
   const stage = $("testStage");
@@ -45,11 +47,11 @@
     const list = $("observations");
     list.replaceChildren();
     $("review-note").textContent = recording ? (
-      points.length ? "共记录 " + points.length + " 个观察点。" : "没有记录观察点。"
-    ) : "本次未启用观察点记录。";
+      points.length ? msg("共记录 ", "Observation count: ") + points.length + msg(" 个观察点。", ".") : msg("没有记录观察点。", "No observations were recorded.")
+    ) : msg("本次未启用观察点记录。", "Observation recording was off for this test.");
     for (const [i, p] of points.entries()) {
       const row = document.createElement("li");
-      row.textContent = (i + 1) + ". " + p.color + " · 距左 " + p.x + "%，距上 " + p.y + "%";
+      row.textContent = (i + 1) + ". " + p.color + msg(" · 距左 ", " · From left: ") + p.x + msg("%，距上 ", "%; from top: ") + p.y + "%";
       list.append(row);
     }
   }
@@ -61,7 +63,7 @@
     stage.hidden = true;
     home.inert = false;
     document.body.classList.remove("testing");
-    if (fallback) $("notice").textContent = "浏览器未允许全屏，已在浏览器视口内完成检查。";
+    if (fallback) $("notice").textContent = msg("浏览器未允许全屏，已在浏览器视口内完成检查。", "Fullscreen was unavailable. The test covered only the browser area.");
     if (document.fullscreenElement === stage && typeof document.exitFullscreen === "function") {
       Promise.resolve(document.exitFullscreen()).catch(() => {});
     }
@@ -83,7 +85,7 @@
     colorIndex = 0;
     lastColorChange = -Infinity;
     stage.classList.add("black");
-    $("current").textContent = "黑色 · 1 / 6";
+    $("current").textContent = msg("黑色 · 1 / 6", "Black · 1 / 6");
     home.inert = true;
     stage.hidden = false;
     document.body.classList.add("testing");
@@ -142,7 +144,7 @@
   stage.addEventListener("click", (event) => {
     if (!active || !recording || event.target !== stage) return;
     if (points.length >= maxPoints) {
-      $("pointStatus").textContent = "已达到本次 100 个观察点的上限。";
+      $("pointStatus").textContent = msg("已达到本次 100 个观察点的上限。", "The limit of 100 observations for this test has been reached.");
       return;
     }
     const box = stage.getBoundingClientRect();
@@ -154,6 +156,6 @@
       x: percent(event.clientX, box.left, box.width),
       y: percent(event.clientY, box.top, box.height)
     });
-    $("pointStatus").textContent = "已记录第 " + points.length + " 个观察点。";
+    $("pointStatus").textContent = msg("已记录第 ", "Observation recorded: ") + points.length + msg(" 个观察点。", ".");
   });
 })();

@@ -8,7 +8,8 @@
 
 1. Select **Code → Download ZIP** on GitHub.
 2. Extract the entire archive. Keep the HTML, JavaScript, and CSS files together.
-3. Open `index.html` in a browser. Start with the symptom you can observe; no diagnostic file is required.
+3. Open `index.html` in a browser. English opens by default. Select **简体中文** on any tool page to switch languages.
+4. Start with the symptom you can observe. No diagnostic file is required.
 
 No installation, administrator access, account, or internet connection is needed after download.
 

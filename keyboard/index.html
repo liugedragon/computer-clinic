@@ -1,64 +1,65 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file:; style-src 'self' file:; connect-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>键盘检测 · 电脑急诊</title>
+  <title>Keyboard test · Computer Clinic</title>
   <link rel="stylesheet" href="keyboard.css">
   <script src="keyboard.js" defer></script>
 </head>
 <body>
   <main class="shell">
     <header class="top">
-      <p class="kicker">电脑急诊 <span>／</span> 输入设备</p>
-      <a id="exit" class="back" href="../index.html">返回工具首页 <span aria-hidden="true">↗</span></a>
-    </header>
+      <p class="kicker">Computer Clinic <span>／</span> Input devices</p>
+      <a id="exit" class="back" href="../index.html">Back to tool home <span aria-hidden="true">↗</span></a>
+      <p><a href="../zh/keyboard/index.html" lang="zh-CN" hreflang="zh-CN">简体中文</a></p>
+  </header>
 
     <section class="intro" aria-labelledby="title">
       <div>
-        <p class="tag">离线工具 · 不采集输入内容</p>
-        <h1 id="title">键盘检测</h1>
-        <p class="summary">逐个按下想检查的按键。页面收到按键时，对应位置会亮起；松手后会留下一个勾。</p>
+        <p class="tag">Offline tool · No text collection</p>
+        <h1 id="title">Keyboard test</h1>
+        <p class="summary">Press the keys you want to check. A key lights up when the page receives it and gets a check mark after release.</p>
       </div>
     </section>
 
-    <section class="panel" aria-label="键盘检测控制台">
+    <section class="panel" aria-label="Keyboard test controls">
       <div class="controls">
         <div class="buttons">
-          <button id="start" class="primary" type="button">开始检测</button>
-          <button id="stop" class="secondary" type="button" disabled>暂停</button>
-          <button id="reset" class="secondary" type="button">清空记录</button>
+          <button id="start" class="primary" type="button">Start test</button>
+          <button id="stop" class="secondary" type="button" disabled>Pause</button>
+          <button id="reset" class="secondary" type="button">Clear marks</button>
         </div>
-        <label class="layout" for="layout">键盘布局
+        <label class="layout" for="layout">Keyboard layout
           <select id="layout">
-            <option value="full">标准键盘（含数字区）</option>
-            <option value="compact">紧凑键盘（不含数字区）</option>
+            <option value="full">Full-size keyboard (with number pad)</option>
+            <option value="compact">Compact keyboard (without number pad)</option>
           </select>
         </label>
       </div>
 
       <div class="statusbar">
-        <p id="status" class="status" role="status">未开始 · 请点击「开始检测」。</p>
-        <p class="counter"><output id="seen">0</output><span> / </span><output id="total">104</output> 已收到</p>
-        <p class="last">最近收到：<output id="last">无</output></p>
+        <p id="status" class="status" role="status">Not started · Select Start test.</p>
+        <p class="counter"><output id="seen">0</output><span> / </span><output id="total">104</output> received</p>
+        <p class="last">Last received:<output id="last">None</output></p>
       </div>
 
-      <p id="help" class="help">只在下方检测区有焦点时监听；按 Tab 离开检测区，或按 Esc 暂停。离开页面、切换窗口也会暂停。窄屏可横向滚动查看其余按键。</p>
-      <section id="capture" class="capture" tabindex="0" aria-label="按键检测区" aria-describedby="help">
+      <p id="help" class="help">The test listens only while the area below is focused. Tab moves focus away and Esc pauses. Leaving the page or switching windows also pauses. Try F5 last: it may reload the page and clear the marks. Scroll sideways on narrow screens.</p>
+      <section id="capture" class="capture" tabindex="0" aria-label="Key test area" aria-describedby="help">
         <div id="board" class="board" aria-hidden="true"></div>
       </section>
 
-      <p class="legend" aria-hidden="true"><span><i class="sample down"></i> 正按下</span><span><i class="sample done">✓</i> 已收到</span><span><i class="sample"></i> 未收到</span></p>
+      <p class="legend" aria-hidden="true"><span><i class="sample down"></i> Pressed</span><span><i class="sample done">✓</i> received</span><span><i class="sample"></i> Not received</span></p>
     </section>
 
     <aside class="note" aria-labelledby="limitations">
-      <h2 id="limitations">没亮，不等于键坏了</h2>
-      <p>键盘布局仅供对照，笔记本可能没有部分按键。Fn、部分功能键、系统或浏览器快捷键可能不会传到本页。建议先切到英文输入模式，单独按键；数字区可切换 Num Lock 再试。若某键仍未显示，可在其他应用或外接键盘上交叉验证。</p>
-      <p>本工具只在本页识别上图的物理按键位置，不读取组合后的文字，不保存或上传记录。请勿在检测区输入密码。</p>
+      <h2 id="limitations">No highlight does not mean a key is broken</h2>
+      <p>Laptop layouts may omit some keys. Fn, certain function keys, and system or browser shortcuts may not reach this page. If the top row changes volume or brightness, try holding Fn while pressing it. Use an English input mode and press keys individually. Try Num Lock for number-pad keys, or compare another app or external keyboard.</p>
+      <p>This tool sees physical key positions, not composed text. Marks are not saved or uploaded. Do not type passwords in the test area.</p>
     </aside>
-    <noscript><p role="alert">浏览器未启用 JavaScript，无法开始检测。</p></noscript>
+    <noscript><p role="alert">Enable JavaScript in your browser to start testing.</p></noscript>
   </main>
 </body>
 </html>

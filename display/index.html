@@ -1,53 +1,55 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file:; style-src 'self' file:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>屏幕纯色检查 · 电脑急诊</title>
+  <title>Display color test · Computer Clinic</title>
   <link rel="stylesheet" href="display.css">
   <script src="display.js" defer></script>
 </head>
 <body>
   <main class="page">
-    <a class="back" href="../index.html">← 返回电脑急诊</a>
-    <p class="eyebrow">电脑急诊 / 屏幕检查</p>
-    <h1>屏幕纯色检查</h1>
-    <p class="lede">手动切换黑、白、红、绿、蓝和灰色，用肉眼观察固定亮点、暗点和色点。测试不会自动切换颜色。</p>
+    <a class="back" href="../index.html">← Back to Computer Clinic</a>
+    <p class="eyebrow">Computer Clinic / Display</p>
+    <p><a href="../zh/display/index.html" lang="zh-CN" hreflang="zh-CN">简体中文</a></p>
+    <h1>Display color test</h1>
+    <p class="lede">Manually cycle through black, white, red, green, blue, and gray. Look for dots that stay bright, dark, or colored. Colors do not change on their own.</p>
     <div class="swatches" aria-hidden="true">
       <span class="black"></span><span class="white"></span><span class="red"></span>
       <span class="green"></span><span class="blue"></span><span class="gray"></span>
     </div>
     <div class="setup">
-      <label><input id="record" type="checkbox"> 允许点击记录观察点（不会在测试画面上画标记）</label>
-      <button type="button" class="primary" id="start">开始全屏检查</button>
+      <label><input id="record" type="checkbox"> Let me click to note positions (no marks are drawn over the test colors)</label>
+      <button type="button" class="primary" id="start">Start fullscreen test</button>
     </div>
     <p id="notice" role="status"></p>
     <details class="tips" open>
-      <summary>怎么检查</summary>
+      <summary>How to test</summary>
       <ol>
-        <li>将浏览器窗口移到要检查的屏幕。建议先清洁屏幕，并把亮度调到舒适水平。</li>
-        <li>一次只看一种颜色。点「下一色」或按方向键切换；按 H 可隐藏或恢复底栏。鼠标移到右上角可退出，也可按 Esc。</li>
-        <li>同一点在不同底色上持续出现，请对照肉眼观察和外部拍照。电脑截图通常不会记录屏幕面板的物理缺陷，单靠截图不能确认坏点。本工具不会自动判定坏点，也不提供检测认证。</li>
+        <li>Move the browser to the display you want to check. Clean the screen first and set a comfortable brightness.</li>
+        <li>Check one color at a time. Choose Next color or use the arrow keys. Press H to hide or restore the controls. Move the pointer to the upper right or press Esc to exit.</li>
+        <li>If a spot persists across colors, inspect it with your eyes and compare an external photo. A screenshot usually cannot capture a physical panel defect. This tool does not automatically detect or certify bad pixels.</li>
       </ol>
     </details>
     <section class="review" id="review" hidden aria-labelledby="review-title">
-      <h2 id="review-title">本次观察记录</h2>
+      <h2 id="review-title">Observations</h2>
       <p id="review-note"></p>
       <ul id="observations"></ul>
-      <p class="muted" id="review-privacy">位置是测试画面的相对坐标，不是物理像素坐标。记录只在当前页面暂存，刷新即清除。</p>
+      <p class="muted" id="review-privacy">Positions are relative to the test area, not physical pixel coordinates. They stay on this page and reset on refresh.</p>
     </section>
   </main>
 
-  <section id="testStage" class="stage black" hidden aria-label="屏幕纯色测试区">
-    <button type="button" id="exit" class="exit" aria-label="退出屏幕检查">退出 <kbd>Esc</kbd></button>
-    <div id="controls" class="controls" role="group" aria-label="测试控制">
-      <button type="button" id="previous" aria-label="上一色">← 上一色</button>
-      <p id="current" role="status">黑色 · 1 / 6</p>
-      <button type="button" id="next" aria-label="下一色">下一色 →</button>
-      <button type="button" id="hideControls">隐藏底栏 <kbd>H</kbd></button>
+  <section id="testStage" class="stage black" hidden aria-label="Solid-color test area">
+    <button type="button" id="exit" class="exit" aria-label="Exit display test">Exit <kbd>Esc</kbd></button>
+    <div id="controls" class="controls" role="group" aria-label="Test controls">
+      <button type="button" id="previous" aria-label="Previous color">← Previous color</button>
+      <p id="current" role="status">Black · 1 / 6</p>
+      <button type="button" id="next" aria-label="Next color">Next color →</button>
+      <button type="button" id="hideControls">Hide controls <kbd>H</kbd></button>
     </div>
-    <button type="button" id="showControls" class="show-controls" hidden>显示底栏 <kbd>H</kbd></button>
+    <button type="button" id="showControls" class="show-controls" hidden>Show controls <kbd>H</kbd></button>
     <p id="pointStatus" class="sr-only" aria-live="polite"></p>
   </section>
 </body>

@@ -5,6 +5,8 @@
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.FreezeTimeline = api;
 })(globalThis, function () {
+  // Use the language of the current offline HTML page.
+  const msg = (zh, en) => globalThis.document?.documentElement.lang === "en" ? en : zh;
   const MAX_BYTES = 256 * 1024;
   const MAX_PER_CHANNEL = 200;
   const WINDOW_DAYS = 7;
@@ -38,12 +40,12 @@
 
   function parseTime(s) {
     const m = typeof s === 'string' && s.length <= 32 && TS.exec(s);
-    if (!m || m[0] !== s || m[8] === '-00:00') throw new InputError('时间必须有效并带时区。');
+    if (!m || m[0] !== s || m[8] === '-00:00') throw new InputError(msg('时间必须有效并带时区。', "The timestamp must be valid and include a time zone."));
     const year = +m[1], month = +m[2], day = +m[3];
     const local = Date.UTC(year, month - 1, day, +m[4], +m[5], +m[6]);
     const check = new Date(local);
     if (check.getUTCFullYear() !== year || check.getUTCMonth() !== month - 1 ||
-        check.getUTCDate() !== day) throw new InputError('日期不合法。');
+        check.getUTCDate() !== day) throw new InputError(msg('日期不合法。', "The date is invalid."));
     const zone = m[8];
     const offset = zone === 'Z' ? 0 :
       (zone[0] === '+' ? 1 : -1) * (+zone.slice(1, 3) * 60 + +zone.slice(4, 6));
@@ -64,14 +66,14 @@
     for (const found of text.matchAll(tokens)) {
       const token = found[0];
       if (token === '{' || token === '[') {
-        if (stack.length >= 8) throw new InputError('摘要的结构过深。');
+        if (stack.length >= 8) throw new InputError(msg('摘要的结构过深。', "The summary is nested too deeply."));
         stack.push(token === '{' ? new Set() : null);
       } else if (token === '}' || token === ']') {
         stack.pop();
       } else if (token === ':') {
         const key = JSON.parse(lastString);
         const keys = stack[stack.length - 1];
-        if (keys.has(key)) throw new InputError('摘要含重复的 JSON 字段。');
+        if (keys.has(key)) throw new InputError(msg('摘要含重复的 JSON 字段。', "The summary contains a duplicate JSON field."));
         keys.add(key);
       } else if (token[0] === '"') {
         lastString = token;
@@ -81,14 +83,14 @@
 
   function readEnvelope(bytes) {
     if (!(bytes instanceof Uint8Array) || bytes.length > MAX_BYTES) {
-      throw new InputError('只接收不超过 256 KiB 的 UTF-8 JSON。');
+      throw new InputError(msg('只接收不超过 256 KiB 的 UTF-8 JSON。', "Use UTF-8 JSON no larger than 256 KiB."));
     }
     let data, text;
     try {
       text = new TextDecoder('utf-8', {fatal: true}).decode(bytes);
       data = JSON.parse(text);
     } catch {
-      throw new InputError('无法读取 UTF-8 JSON。');
+      throw new InputError(msg('无法读取 UTF-8 JSON。', "Could not read UTF-8 JSON."));
     }
     rejectDuplicateKeys(text);
     if (!exactKeys(data, ['schema_version', 'source', 'window_days', 'channels', 'events']) ||
@@ -96,7 +98,7 @@
         !exactKeys(data.channels, ['System', 'Application']) ||
         !STATUSES.has(data.channels.System) || !STATUSES.has(data.channels.Application) ||
         !Array.isArray(data.events) || data.events.length > MAX_PER_CHANNEL * 2) {
-      throw new InputError('这不是受支持的 v2 事件摘要，或事件超过 400 条。');
+      throw new InputError(msg('这不是受支持的 v2 事件摘要，或事件超过 400 条。', "The summary is not a supported v2 event summary or contains more than 400 events."));
     }
     return data;
   }
@@ -105,14 +107,14 @@
     const fields = ['reported_at', 'channel', 'provider', 'event_id'];
     const hasCode = raw !== null && typeof raw === 'object' && Object.hasOwn(raw, 'bugcheck_code');
     if (!exactKeys(raw, hasCode ? [...fields, 'bugcheck_code'] : fields)) {
-      throw new InputError('事件包含不允许的字段。');
+      throw new InputError(msg('事件包含不允许的字段。', "An event contains an unexpected field."));
     }
     const rule = SOURCES.find(r => r[0] === raw.channel && r[1] === raw.provider && r[2] === raw.event_id);
-    if (!rule) throw new InputError('事件来源、频道或编号不在白名单。');
+    if (!rule) throw new InputError(msg('事件来源、频道或编号不在白名单。', "The event source, channel, or ID is not supported."));
     const code = hasCode ? raw.bugcheck_code : 0;
     if (hasCode && (rule[3] !== 'unexpected_reboot' || !Number.isInteger(code) ||
         code < 0 || code > 0xFFFFFFFF)) {
-      throw new InputError('蓝屏代码字段不合法。');
+      throw new InputError(msg('蓝屏代码字段不合法。', "The stop code field is invalid."));
     }
     return {
       ...parseTime(raw.reported_at),
@@ -156,7 +158,7 @@
     const rows = data.events.map(r => {
       const row = rowFrom(r);
       if (++counts[row.channel] > MAX_PER_CHANNEL || data.channels[row.channel] === 'unavailable') {
-        throw new InputError('事件条数或频道状态与摘要不符。');
+        throw new InputError(msg('事件条数或频道状态与摘要不符。', "The event count or channel status does not match the summary."));
       }
       return row;
     }).sort((a, b) => a.micros - b.micros);

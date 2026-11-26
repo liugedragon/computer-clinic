@@ -1,5 +1,7 @@
 (() => {
   'use strict';
+  // Use the language of the current offline HTML page.
+  const msg = (zh, en) => globalThis.document?.documentElement.lang === "en" ? en : zh;
   // Each panel owns a ticket. A newer import, a text edit or reset retires the old read.
   function reader(input, byteLimit, handlers) {
     let ticket = 0;
@@ -20,7 +22,7 @@
       input.setAttribute('aria-busy', 'true');
       handlers.start();
       try {
-        if (!file.size || file.size > byteLimit) throw new Error('文件为空或太大，请选择一份精简的 JSON 检查结果。');
+        if (!file.size || file.size > byteLimit) throw new Error(msg('文件为空或太大，请选择一份精简的 JSON 检查结果。', "The file is empty or too large. Choose a small JSON summary."));
         let data;
         try {
           const bytes = await new Promise((resolve, reject) => {
@@ -31,7 +33,7 @@
           });
           data = new TextDecoder('utf-8', {fatal:true}).decode(bytes).trim();
         } catch {
-          throw new Error('无法读取该文件，请检查是否为 UTF-8 文本。也可以手动粘贴结果。');
+          throw new Error(msg('无法读取该文件，请检查是否为 UTF-8 文本。也可以手动粘贴结果。', "Could not read this file as UTF-8 text. You can also paste the summary."));
         }
         if (current === ticket) handlers.success(data);
       } catch (error) {

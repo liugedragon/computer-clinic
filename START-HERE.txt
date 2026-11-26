@@ -1,0 +1,6 @@
+Computer Clinic · Offline browser preview
+
+Extract this entire folder. Open index.html for English or zh/index.html for Simplified Chinese.
+Use the language link on any tool page to switch. No installation, internet connection, or diagnostic file is required after download.
+
+See README.md for the tools, limitations, and contribution links.

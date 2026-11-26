@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'; connect-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file:; style-src 'self' file:; base-uri 'none'; form-action 'none'; connect-src 'none'">
   <meta name="referrer" content="no-referrer">
-  <title>电脑急诊 · 网络诊断</title>
+  <title>Computer Clinic · Network</title>
   <link rel="stylesheet" href="clinic.css">
   <script defer src="local-json.js"></script>
   <script defer src="diagnosis.js"></script>
@@ -14,75 +14,76 @@
 <body>
 <div class="shell">
   <header>
-    <p class="eyebrow">电脑急诊 <span>V0.7 浏览器预览</span></p>
-    <h1>电脑连不上网？</h1>
-    <p class="intro">先找出故障范围，再决定查哪一步。不安装、不上传、不自动改设置。</p>
-    <nav aria-label="离线工具">
-      <a aria-current="page" href="index.html">网络诊断</a>
-      <a href="keyboard/index.html">键盘测试</a>
-      <a href="display/index.html">屏幕测试</a>
-      <a href="freeze/index.html">卡死与重启</a>
+    <p class="eyebrow">Computer Clinic <span>v0.7 Browser Preview</span></p>
+    <h1>Can't get online?</h1>
+    <p class="intro">Find out what is affected before changing anything. No installation, uploads, or automatic changes.</p>
+    <nav aria-label="Offline tools">
+      <a aria-current="page" href="index.html">Network</a>
+      <a href="keyboard/index.html">Keyboard</a>
+      <a href="display/index.html">Display</a>
+      <a href="freeze/index.html">Freezes and restarts</a>
     </nav>
+    <p><a href="zh/index.html" lang="zh-CN" hreflang="zh-CN">简体中文</a></p>
   </header>
-  <noscript><p class="panel">本工具需要浏览器中的 JavaScript。没有网络也可以运行。</p></noscript>
+  <noscript><p class="panel">This tool needs JavaScript in your browser. It can run without internet access.</p></noscript>
   <main>
     <section class="panel" aria-labelledby="quick-title">
-      <p class="eyebrow">开始这里 · 默认离线</p>
-      <h2 id="quick-title" tabindex="-1">你遇到哪一种情况？</h2>
-      <p>先选与你最接近的情况，马上看下一步。没有运行任何检测，也可以开始。</p>
+      <p class="eyebrow">Start here · Works offline</p>
+      <h2 id="quick-title" tabindex="-1">What are you experiencing?</h2>
+      <p>Choose the closest match to get a next step. You do not need to run any checks first.</p>
       <div class="actions">
-        <button type="button" id="quick-all">大多数应用打不开</button>
-        <button type="button" id="quick-one">只有一个应用或网页打不开</button>
-        <button type="button" id="quick-portal">公共 Wi-Fi 好像要登录</button>
+        <button type="button" id="quick-all">Most apps cannot connect</button>
+        <button type="button" id="quick-one">Only one app or website cannot connect</button>
+        <button type="button" id="quick-portal">Public Wi-Fi seems to need a sign-in</button>
       </div>
       <div class="actions">
-        <button type="button" id="quick-paste" class="secondary">我已经复制 Windows 检查结果</button>
-        <button type="button" id="quick-demo" class="secondary">看两个演示场景</button>
+        <button type="button" id="quick-paste" class="secondary">I already copied a Windows summary</button>
+        <button type="button" id="quick-demo" class="secondary">View the two demo scenarios</button>
       </div>
       <p id="quick-feedback" role="status" class="message"></p>
-      <p class="subtle">可以粘贴检查结果，或主动选择已保存的 JSON 文件。网页不会读剪贴板、运行命令或上传文件。</p>
+      <p class="subtle">Paste a summary or choose a saved JSON file yourself. This page does not read your clipboard, run commands, or upload files.</p>
     </section>
     <div class="grid">
       <section class="panel" aria-labelledby="evidence-title">
-        <p class="eyebrow">01 · 系统证据</p>
-        <h2 id="evidence-title">可选：导入已有检查结果</h2>
-        <p>此包不附带 Windows 自动采集，可跳过本栏直接排查。已有兼容的匿名网络摘要时，可手动粘贴或选择文件。</p>
-        <p class="subtle">兼容的摘要只包含已连接网卡、候选 IP 和默认路由的计数。结果不包含实际 IP 地址、网卡名、Wi-Fi 名称、账号或密码。</p>
-        <p><label for="snapshot-file">已有离线检查 JSON？选择文件：</label>
+        <p class="eyebrow">01 · System evidence</p>
+        <h2 id="evidence-title">Optional: import an existing summary</h2>
+        <p>This download does not include a Windows collector. You can skip this section, or paste or select a compatible anonymous network summary.</p>
+        <p class="subtle">A compatible summary contains only counts of connected adapters, candidate IP addresses, and default routes. It contains no actual addresses, adapter names, Wi-Fi names, usernames, or passwords.</p>
+        <p><label for="snapshot-file">Have an offline JSON summary? Choose a file:</label>
         <input type="file" id="snapshot-file" accept=".json,application/json" aria-describedby="message"></p>
-        <label for="snapshot">Windows 检查结果</label>
+        <label for="snapshot">Windows check summary</label>
         <textarea id="snapshot" rows="3" maxlength="4000" spellcheck="false" autocomplete="off" placeholder='{"version":1, …}' aria-describedby="message"></textarea>
         <div class="actions">
-          <button type="button" id="load">导入并分析</button>
-          <button type="button" id="clear" class="secondary">清除本页数据</button>
+          <button type="button" id="load">Import and analyze</button>
+          <button type="button" id="clear" class="secondary">Clear page data</button>
         </div>
-        <p class="message" id="message" role="status" aria-live="polite">没有证据时，也可以用右侧选项开始。</p>
+        <p class="message" id="message" role="status" aria-live="polite">You can start with the symptom choices without importing anything.</p>
       </section>
       <section class="panel" aria-labelledby="context-title">
-        <p class="eyebrow">02 · 你看到的现象</p>
-        <h2 id="context-title">回答你能确定的问题</h2>
+        <p class="eyebrow">02 · What you noticed</p>
+        <h2 id="context-title">Answer the questions you can</h2>
         <div class="fields">
-          <label>联网方式<select id="path"><option value="unknown">不确定</option><option value="wifi">无线 Wi-Fi</option><option value="ethernet">有线网线</option></select></label>
-          <label>同一个网络的其他设备可以上网吗？<select id="other"><option value="unknown">没对比或不确定</option><option value="yes">可以</option><option value="no">不可以</option></select></label>
-          <label>故障表现<select id="scope"><option value="unknown">不确定</option><option value="all">所有或大多数应用都失败</option><option value="one">只有一个应用或网站失败</option><option value="local">只有本机网页（localhost / 127.0.0.1）打不开</option><option value="portal">像是公共 Wi-Fi 要登录</option></select></label>
-          <label>使用 VPN 或单位规定的代理？<select id="vpn"><option value="unknown">不确定</option><option value="yes">是</option><option value="no">否</option></select></label>
+          <label>Connection type<select id="path"><option value="unknown">Not sure</option><option value="wifi">Wi-Fi</option><option value="ethernet">Ethernet</option></select></label>
+          <label>Can another device on the same network get online?<select id="other"><option value="unknown">Not checked or not sure</option><option value="yes">Yes</option><option value="no">No</option></select></label>
+          <label>What fails?<select id="scope"><option value="unknown">Not sure</option><option value="all">All or most apps fail</option><option value="one">Only one app or website fails</option><option value="local">Only a local page (localhost / 127.0.0.1) fails</option><option value="portal">Public Wi-Fi seems to require sign-in</option></select></label>
+          <label>Are you using a VPN or an organization-managed proxy?<select id="vpn"><option value="unknown">Not sure</option><option value="yes">Yes</option><option value="no">No</option></select></label>
         </div>
       </section>
     </div>
     <section class="panel results" aria-labelledby="result-title">
-      <p class="eyebrow">03 · 结果与下一步</p>
+      <p class="eyebrow">03 · Result and next step</p>
       <div id="result" aria-live="polite" aria-atomic="true">
-        <h2 id="result-title" tabindex="-1">现有信息不足，不能确定故障原因</h2>
-        <p class="next"><strong>建议先做：</strong><span id="next"></span></p>
+        <h2 id="result-title" tabindex="-1">Not enough information to identify a cause</h2>
+        <p class="next"><strong>Try this first:</strong><span id="next"></span></p>
         <ul id="findings"></ul>
         <p id="demo-status" hidden></p>
-        <p class="subtle" id="limits">本工具没有访问互联网。</p>
+        <p class="subtle" id="limits">This tool has not contacted the internet.</p>
       </div>
-      <button type="button" class="secondary" id="follow">定位到建议补充的问题</button>
-      <button type="button" class="secondary" id="redo">重新开始</button>
+      <button type="button" class="secondary" id="follow">Go to the suggested question</button>
+      <button type="button" class="secondary" id="redo">Start over</button>
     </section>
   </main>
-  <footer>仅供排查，不代替维修检测。输入和分析结果只保留在当前页面中；刷新或点击清除即重置。时间线不判定卡死根因；本工具不执行自动修复。</footer>
+  <footer>This tool helps you troubleshoot. It does not replace service diagnostics. Inputs and results stay on this page; refreshing or clearing resets them. The timeline does not identify the cause of a freeze. No automatic repairs are made.</footer>
 </div>
 </body>
 </html>
