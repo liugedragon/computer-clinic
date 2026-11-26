@@ -1,6 +1,5 @@
 'use strict';
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const {pathToFileURL} = require('node:url');
@@ -9,7 +8,9 @@ const root = path.resolve(__dirname, '..');
 const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
 
 (async () => {
-  assert.equal(process.platform, 'win32');
+  const expectedPlatform = process.argv[2] || 'win32';
+  assert.ok(['win32', 'linux'].includes(expectedPlatform), 'Unsupported runner platform');
+  assert.equal(process.platform, expectedPlatform);
   const browser = await chromium.launch({channel: 'msedge', headless: true});
   console.log('OS: ' + os.version() + ' | Edge: ' + browser.version());
   try {
