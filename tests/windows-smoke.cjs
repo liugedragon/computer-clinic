@@ -33,14 +33,27 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       await page.locator('#snapshot-file').setInputFiles(sample('network-v1'));
       await page.locator('#message').filter({hasText: /selected file was loaded|已导入所选文件/}).waitFor();
       assert.match(await page.locator('#result-title').innerText(), /one app or website|局限于一个应用或网站/);
+      await page.locator('#snapshot-file').setInputFiles({
+        name: 'invalid-summary.json', mimeType: 'application/json', buffer: Buffer.from('{')
+      });
+      await page.locator('#message.error').waitFor();
+      assert.doesNotMatch(await page.locator('#findings').innerText(), /reports 1 enabled|报告有 1 个/);
       await open('keyboard/index.html');
       await page.locator('#start').click();
       assert.equal(await page.locator('#stop').isEnabled(), true);
-      await page.keyboard.press('KeyA');
+      await page.keyboard.press('a');
+      await visible('[data-code="KeyA"].done');
+      assert.equal((await page.locator('#seen').innerText()).trim(), '1');
       await page.locator('#stop').click();
+      await page.keyboard.press('b');
+      assert.equal(await page.locator('[data-code="KeyB"].done').count(), 0);
+      assert.equal((await page.locator('#seen').innerText()).trim(), '1');
+      console.log(lang + ': A recorded while active; B ignored after pause');
       await open('display/index.html');
       await page.locator('#start').click();
       await visible('#testStage');
+      console.log(lang + ': observed browser fullscreen: ' +
+        await page.evaluate(() => document.fullscreenElement?.id === 'testStage'));
       await page.locator('#next').click();
       assert.match(await page.locator('#current').innerText(), /2\s*\/\s*6/);
       await page.locator('#exit').click();
