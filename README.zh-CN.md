@@ -15,6 +15,8 @@
 
 想试用导入功能？用[合成样例](docs/examples/README.md#简体中文)即可，不需要本机日志。
 
+Linux 用户可以使用浏览器里的网络、键盘和屏幕工具，详见 [Linux 排查指南](docs/linux.md#简体中文)。重启工具可以看演示，但只接受 Windows 格式摘要，不读取 Linux 日志。
+
 这一版不包含 Windows 自动采集脚本或 EXE，不会自动修改设置，也不会上传诊断结果。自动测试在 Linux 上模拟浏览器运行；尚未完成 Windows 实机验收。
 
 ## 欢迎贡献 · Contributions welcome

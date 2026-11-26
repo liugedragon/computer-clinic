@@ -24,6 +24,10 @@ No installation, administrator access, account, or internet connection is needed
 
 To try importing without using your own logs, see the [synthetic examples](docs/examples/README.md).
 
+## Linux and Windows
+
+Network guidance, keyboard testing, and solid-color display checks are browser tools. On Linux, see the [Linux troubleshooting guide](docs/linux.md). Restart examples work in the browser, but restart-summary import is Windows-format only. There is no Linux log collector or importer.
+
 ## Privacy and preview scope
 
 The browser preview is designed to run locally. It does not upload or persist diagnostic data, change settings, or include an executable or system-log collector. Imported data is optional. Read [what the app does with your data](docs/privacy.md) before sharing a report.

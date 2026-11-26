@@ -37,7 +37,7 @@
         <button type="button" id="quick-portal">公共 Wi-Fi 好像要登录</button>
       </div>
       <div class="actions">
-        <button type="button" id="quick-paste" class="secondary">我已经复制 Windows 检查结果</button>
+        <button type="button" id="quick-paste" class="secondary">我已经复制网络摘要</button>
         <button type="button" id="quick-demo" class="secondary">看两个演示场景</button>
       </div>
       <p id="quick-feedback" role="status" class="message"></p>
@@ -51,7 +51,7 @@
         <p class="subtle">兼容的摘要只包含已连接网卡、候选 IP 和默认路由的计数。结果不包含实际 IP 地址、网卡名、Wi-Fi 名称、账号或密码。</p>
         <p><label for="snapshot-file">已有离线检查 JSON？选择文件：</label>
         <input type="file" id="snapshot-file" accept=".json,application/json" aria-describedby="message"></p>
-        <label for="snapshot">Windows 检查结果</label>
+        <label for="snapshot">网络摘要（JSON）</label>
         <textarea id="snapshot" rows="3" maxlength="4000" spellcheck="false" autocomplete="off" placeholder='{"version":1, …}' aria-describedby="message"></textarea>
         <div class="actions">
           <button type="button" id="load">导入并分析</button>

@@ -37,7 +37,7 @@
         <button type="button" id="quick-portal">Public Wi-Fi seems to need a sign-in</button>
       </div>
       <div class="actions">
-        <button type="button" id="quick-paste" class="secondary">I already copied a Windows summary</button>
+        <button type="button" id="quick-paste" class="secondary">I already copied a network summary</button>
         <button type="button" id="quick-demo" class="secondary">View the two demo scenarios</button>
       </div>
       <p id="quick-feedback" role="status" class="message"></p>
@@ -51,7 +51,7 @@
         <p class="subtle">A compatible summary contains only counts of connected adapters, candidate IP addresses, and default routes. It contains no actual addresses, adapter names, Wi-Fi names, usernames, or passwords.</p>
         <p><label for="snapshot-file">Have an offline JSON summary? Choose a file:</label>
         <input type="file" id="snapshot-file" accept=".json,application/json" aria-describedby="message"></p>
-        <label for="snapshot">Windows check summary</label>
+        <label for="snapshot">Network summary (JSON)</label>
         <textarea id="snapshot" rows="3" maxlength="4000" spellcheck="false" autocomplete="off" placeholder='{"version":1, …}' aria-describedby="message"></textarea>
         <div class="actions">
           <button type="button" id="load">Import and analyze</button>

@@ -75,22 +75,22 @@
     if (shared) return result('shared', msg('另一台设备也失败，先排查两台设备共用的网络', "Another device also fails. Check the shared network first."), sharedNext, Q.scope);
     if (v?.adapters === 'ok' && v.up === 0) {
       return result('no-link', msg('系统未报告已连接的网络适配器', "No connected network adapter was reported"),
-        ans.path === 'wifi' ? msg('打开 Windows「设置 → 网络和 Internet → Wi-Fi」，确认 Wi-Fi 已开启、未打开飞行模式，并查看目标网络是否显示“已连接”。', "Open Windows Settings → Network & internet → Wi-Fi. Check that Wi-Fi is on, airplane mode is off, and the intended network shows Connected.")
+        ans.path === 'wifi' ? msg('打开系统的 Wi-Fi 设置（Windows 或 Linux 桌面均可），确认 Wi-Fi 已开启、飞行模式已关闭，目标网络显示已连接。', "Open your Wi-Fi settings on Windows or your Linux desktop. Check that Wi-Fi is on, airplane mode is off, and you are connected to the intended network.")
         : ans.path === 'ethernet' ? msg('查看网线两端是否插稳，以及路由器对应端口的链路指示灯。若是在办公环境，先询问管理员。', "Check that the cable is secure at both ends and look at the corresponding port light. On a work network, check with the administrator first.")
         : msg('先确认这台电脑正在尝试连接 Wi-Fi 还是有线网络。', "First confirm whether this PC is trying to use Wi-Fi or Ethernet."), ans.path === 'unknown' ? Q.path : Q.other);
     }
     if (v?.adapters === 'ok' && full && !paired && v.ipv4 === 0 && v.ipv6 === 0) {
       return result('no-address', msg('有已连接网卡，但未报告可用于此检查的 IP 地址', "A connected adapter was found, but no usable IP address was reported"),
-        msg('查看当前连接的 Windows IP 分配设置和路由器 DHCP 状态。自定义静态 IP 的设备先联系管理员，不要直接重置。', "Check the Windows IP assignment for this connection and the router's DHCP status. For a custom static IP, ask the administrator before resetting anything."), Q.other);
+        msg('查看当前连接的 IP 分配设置和路由器 DHCP 状态。自定义静态 IP 的设备先联系管理员，不要直接重置。', "Check the IP assignment for this connection and the router's DHCP status. For a custom static IP, ask the administrator before resetting anything."), Q.other);
     }
     if (v?.adapters === 'ok' && full && !paired) {
       const noRoute = v.route4 === 0 && v.route6 === 0;
       return result(noRoute ? 'no-default-route' : 'unpaired-route',
         noRoute ? msg('已连接网卡没有观测到默认路由', "No default route was found on the connected adapters") : msg('没有找到地址和同地址族默认路由同时存在的网卡', "No adapter was found with both an address and a default route of the same address family"),
-        msg('查看 Windows 中实际联网的适配器是否有默认网关。若使用 VPN、公司网络或只访问局域网，可能是设计如此，先核对管理员给的配置。', "Check whether the adapter you actually use has a default gateway in Windows. VPN, work, or local-only networks may be intentionally configured this way. Check with the administrator first."), Q.vpn);
+        msg('在系统网络设置中查看实际联网的适配器是否有默认网关。若使用 VPN、公司网络或只访问局域网，可能是设计如此，先核对管理员给的配置。', "Check the network settings for a default gateway on the adapter you actually use. VPN, work, or local-only networks may be intentionally configured this way. Check with the administrator first."), Q.vpn);
     }
     if (ans.scope === 'portal') return result('portal', msg('你遇到的表现可能是公共网络需要登录', "The public network may require sign-in"),
-      msg('检查 Windows 网络通知里的登录提示，仅在确认是该网络的官方页面后登录。不要忽略浏览器证书警告。', "Look for a sign-in prompt in Windows. Use it only after verifying that it belongs to that network. Do not ignore browser certificate warnings."), Q.other);
+      msg('检查系统网络通知或浏览器里是否有登录提示，仅在确认是该网络的官方页面后登录。不要忽略浏览器证书警告。', "Look for a sign-in prompt in your network notifications or browser. Use it only after verifying that it belongs to that network. Do not ignore browser certificate warnings."), Q.other);
     if (ans.scope === 'one') return result('one', msg('故障看起来局限于一个应用或网站', "The problem appears limited to one app or website"),
       msg('先检查其他应用是否工作；只有一个应用或网站异常时，优先查该应用的服务状态、离线模式或代理设置，不要先重置整台电脑的网络。', "Check whether other apps work. If only one fails, check its service status, offline mode, or proxy settings before resetting the PC's network."), Q.vpn);
     if (ans.vpn === 'yes') return result('vpn', msg('VPN 或单位代理是应优先核对的配置', "Check the VPN or organization-managed proxy first"),
