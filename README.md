@@ -32,7 +32,7 @@ Network guidance, keyboard testing, and solid-color display checks are browser t
 
 The browser preview is designed to run locally. It does not upload or persist diagnostic data, change settings, or include an executable or system-log collector. Imported data is optional. Read [what the app does with your data](docs/privacy.md) before sharing a report.
 
-This is an early preview. The four tools passed [offline tests in Microsoft Edge on GitHub-hosted Windows Server 2025](https://github.com/liugedragon/computer-clinic/actions/runs/45832501538) in English and Simplified Chinese. The tests use simulated keystrokes and sample files. Windows 11 on a physical PC, physical keyboards, and monitor panels have not been tested.
+This is an early preview. [Offline browser tests](https://github.com/liugedragon/computer-clinic/actions/runs/45870061415) passed in Microsoft Edge on GitHub-hosted Windows Server 2025 and Ubuntu 24.04, in English and Simplified Chinese. They cover sample network and restart imports, simulated keystrokes, and fullscreen color rendering. They do not cover physical Windows 11 PCs, keyboards, monitor panels, or real system logs.
 
 ## Contribute
 
