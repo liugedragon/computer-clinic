@@ -54,8 +54,37 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       await visible('#testStage');
       console.log(lang + ': observed browser fullscreen: ' +
         await page.evaluate(() => document.fullscreenElement?.id === 'testStage'));
-      await page.locator('#next').click();
-      assert.match(await page.locator('#current').innerText(), /2\s*\/\s*6/);
+      // Inspect rendered screenshot pixels, not the CSS property or the color label.
+      const colors = [
+        [0,0,0,255], [255,255,255,255], [255,0,0,255],
+        [0,255,0,255], [0,0,255,255], [128,128,128,255]
+      ];
+      await page.emulateMedia({forcedColors: lang === 'zh-CN' ? 'active' : 'none'});
+      assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), lang === 'zh-CN');
+      for (const [index, expected] of colors.entries()) {
+        if (index) {
+          // The app deliberately ignores color changes less than 500 ms apart.
+          if (index > 1) await new Promise(resolve => setTimeout(resolve, 525));
+          await page.locator('#next').click();
+        }
+        await page.locator('#current').filter({hasText: new RegExp(String(index + 1) + '\\s*/\\s*6')}).waitFor();
+        const png = await page.screenshot({type:'png'});
+        const rgba = await page.evaluate(async array => {
+          const bmp = await createImageBitmap(new Blob([new Uint8Array(array)], {type:'image/png'}));
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = canvas.height = 1;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(bmp, Math.floor(bmp.width / 2), Math.floor(bmp.height / 2), 1, 1, 0, 0, 1, 1);
+            return Array.from(ctx.getImageData(0, 0, 1, 1).data);
+          } finally {
+            bmp.close();
+          }
+        }, Array.from(png));
+        assert.deepEqual(rgba, expected, lang + ' screenshot color ' + (index + 1));
+      }
+      console.log(lang + ': six rendered PNG center pixels matched (forced colors: ' + (lang === 'zh-CN' ? 'active' : 'none') + ')');
+      await page.emulateMedia({forcedColors:'none'});
       await page.locator('#exit').click();
       await hidden('#testStage');
       await open('freeze/index.html');
