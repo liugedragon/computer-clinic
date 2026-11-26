@@ -22,6 +22,8 @@ No installation, administrator access, account, or internet connection is needed
 | Display | Cycle through six solid colors to look for stuck or dead pixels | It does not scan the panel or certify that the screen is fault-free |
 | Freezes and restarts | Read a synthetic example or a compatible, user-selected event summary | A restart record is evidence of a restart, not necessarily its cause |
 
+To try importing without using your own logs, see the [synthetic examples](docs/examples/README.md).
+
 ## Privacy and preview scope
 
 The browser preview is designed to run locally. It does not upload or persist diagnostic data, change settings, or include an executable or system-log collector. Imported data is optional. Read [what the app does with your data](docs/privacy.md) before sharing a report.

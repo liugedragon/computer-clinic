@@ -10,7 +10,7 @@ Include your OS and browser version, which tool you used, steps to reproduce, an
 
 1. Open `index.html` directly in a browser from the complete repository folder. No local server is needed.
 2. Try a symptom on the network page, then follow each tool link and return to the home page.
-3. Try a few keys, including pause and resume, and try exiting the display test. On the restart page, load and clear a demo.
+3. Try a few keys, including pause and resume, and try exiting the display test. On the restart page, load and clear a demo. Use the [synthetic JSON examples](docs/examples/README.md) to exercise both file pickers.
 4. Switch languages on each tool page and check that actions and results are translated in both languages. Repeat with the internet disconnected. If you test on actual Windows hardware, say which browser and OS you used. Distinguish manual tests from simulated tests.
 
 ## Open a pull request

@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "source": "synthetic_fixture",
+  "window_days": 7,
+  "channels": {
+    "System": "complete",
+    "Application": "complete"
+  },
+  "events": [
+    {
+      "reported_at": "2026-01-02T11:59:55Z",
+      "channel": "System",
+      "provider": "disk",
+      "event_id": 153
+    },
+    {
+      "reported_at": "2026-01-02T12:00:00Z",
+      "channel": "System",
+      "provider": "Microsoft-Windows-Kernel-Power",
+      "event_id": 41,
+      "bugcheck_code": 0
+    }
+  ]
+}
