@@ -1,4 +1,4 @@
-name: Windows browser smoke test
+name: Offline Edge checks
 on:
   push:
     branches: [qa/windows-smoke]
@@ -6,18 +6,32 @@ permissions:
   contents: read
 jobs:
   edge:
-    runs-on: windows-latest
+    name: Edge (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2025
+            platform: win32
+          - os: ubuntu-24.04
+            platform: linux
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-      - name: Install browser test driver
+      - name: Install browser test driver (Windows)
+        if: runner.os == 'Windows'
         shell: pwsh
-        run: |
-          npm.cmd install --prefix "$env:RUNNER_TEMP/clinic-qa" --no-audit --no-fund --ignore-scripts playwright@1.56.1
+        run: npm.cmd install --prefix "$env:RUNNER_TEMP/clinic-qa" --no-audit --no-fund --ignore-scripts playwright@1.56.1
+      - name: Install browser test driver (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: npm install --prefix "$RUNNER_TEMP/clinic-qa" --no-audit --no-fund --ignore-scripts playwright@1.56.1
       - name: Exercise offline pages in Microsoft Edge
+        env:
+          CLINIC_PLAYWRIGHT: ${{ runner.temp }}/clinic-qa/node_modules/playwright
+          EXPECTED_PLATFORM: ${{ matrix.platform }}
         shell: pwsh
-        run: |
-          $env:CLINIC_PLAYWRIGHT = "$env:RUNNER_TEMP/clinic-qa/node_modules/playwright"
-          node tests/windows-smoke.cjs
+        run: node tests/windows-smoke.cjs $env:EXPECTED_PLATFORM
