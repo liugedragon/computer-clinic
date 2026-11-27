@@ -11,6 +11,7 @@
     storage_reset: msg('存储设备重置', "Storage device reset"), application_error: msg('应用错误', "Application error"), application_hang: msg('应用挂起', "Application hang")
   };
   const coverage = {complete: msg('查询完成（仅所选事件）', "Query complete (selected events only)"), limited: msg('结果受限，可能缺记录', "Limited; records may be missing"), unavailable: msg('无法读取', "Unavailable")};
+  const recordCount = count => count + msg(' 条记录', count === 1 ? ' record' : ' records');
   let request = 0;
 
   function add(parent, tag, value) {
@@ -30,9 +31,9 @@
   function render(report, fromBuiltInDemo = false) {
     $('mode').textContent = fromBuiltInDemo ? msg('内置合成样例 · 不是本机记录', "Synthetic example · Not from this PC") : msg('导入的 Windows 格式摘要 · 来源未经核验', "Imported Windows-format summary · Source unverified");
     $('reboot').textContent = report.rebootEvidence === 'observed' ?
-      msg('有标记（', "Markers found (") + report.rebootIndexes.length + msg(' 条记录）', " records)") : msg('未知', "Unknown");
+      msg('有标记（', "Markers found (") + recordCount(report.rebootIndexes.length) + msg('）', ")") : msg('未知', "Unknown");
     $('bugcheck').textContent = report.bugcheckEvidence === 'observed' ?
-      msg('有证据（', "Evidence found (") + report.bugcheckIndexes.length + msg(' 条记录）', " records)") : msg('未知', "Unknown");
+      msg('有证据（', "Evidence found (") + recordCount(report.bugcheckIndexes.length) + msg('）', ")") : msg('未知', "Unknown");
     $('coverage').textContent = 'System：' + coverage[report.channels.System] +
       '；Application：' + coverage[report.channels.Application] + '。';
     const list = document.createDocumentFragment();
