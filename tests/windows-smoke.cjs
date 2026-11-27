@@ -95,6 +95,48 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       assert.equal(await page.locator('[data-code="KeyB"].done').count(), 0);
       assert.equal((await page.locator('#seen').innerText()).trim(), '1');
       console.log(lang + ': A recorded while active; B ignored after pause');
+      await page.locator('#start').click();
+      const watch = await page.evaluateHandle(() => {
+        const observed = [];
+        document.addEventListener('keydown', event => {
+          if (event.code === 'ArrowDown' || event.code === 'Space') {
+            observed.push([event.code, event.repeat, event.defaultPrevented]);
+          }
+        });
+        return observed;
+      });
+      for (const [key, code] of [['ArrowDown', 'ArrowDown'], ['Space', 'Space']]) {
+        await page.keyboard.down(key);
+        await visible('[data-code="' + code + '"].down');
+        await page.keyboard.down(key);
+        await page.keyboard.up(key);
+        assert.equal(await page.locator('[data-code="' + code + '"].down').count(), 0);
+        assert.equal(await page.locator('[data-code="' + code + '"].done').count(), 1);
+      }
+      assert.deepEqual(await watch.jsonValue(), [
+        ['ArrowDown', false, true], ['ArrowDown', true, true],
+        ['Space', false, true], ['Space', true, true]
+      ]);
+      await watch.dispose();
+      assert.equal((await page.locator('#seen').innerText()).trim(), '3');
+      const behavior = await page.locator('#capture').evaluate(capture => {
+        const check = (code, extra) => {
+          const event = new KeyboardEvent('keydown', {code, bubbles:true, cancelable:true, ...extra});
+          capture.dispatchEvent(event);
+          return event.defaultPrevented;
+        };
+        return [check('ArrowDown', {ctrlKey:true, repeat:true}),
+          check('Space', {isComposing:true, repeat:true}), check('F5', {repeat:true})];
+      });
+      assert.deepEqual(behavior, [false, false, false]);
+      await page.keyboard.down('c');
+      await visible('[data-code="KeyC"].down');
+      await page.locator('#stop').click();
+      assert.equal(await page.locator('.key.down').count(), 0);
+      await page.keyboard.up('c');
+      await page.locator('#reset').click();
+      assert.equal((await page.locator('#seen').innerText()).trim(), '0');
+      console.log(lang + ': keyboard repeats do not scroll or add marks; shortcuts, composition, pause and reset checked');
       await open('display/index.html');
       await page.locator('#start').click();
       await visible('#testStage');
