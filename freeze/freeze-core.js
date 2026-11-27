@@ -24,9 +24,8 @@
     ['Application', 'Application Error', 1000, 'application_error'],
     ['Application', 'Application Hang', 1002, 'application_hang']
   ];
-  const REBOOT = new Set(['unexpected_reboot', 'unexpected_shutdown']);
-  const MARKERS = new Set([...REBOOT, 'bugcheck_report']);
-  const CONTEXT = new Set(SOURCES.map(x => x[3]).filter(x => !MARKERS.has(x)));
+  const REBOOT = new Set(['unexpected_reboot', 'unexpected_shutdown', 'bugcheck_report']);
+  const CONTEXT = new Set(SOURCES.map(x => x[3]).filter(x => !REBOOT.has(x)));
   const STATUSES = new Set(['complete', 'limited', 'unavailable']);
   const SOURCENAMES = new Set(['synthetic_fixture', 'windows_local_summary']);
   const TS = /^(20\d\d|2100)-(\d{2})-(\d{2})T([01]\d|2[0-3]):([0-5]\d):([0-5]\d)(?:\.(\d{1,6}))?(Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/;
@@ -168,7 +167,7 @@
     const timeline = rows.map(({micros, ...row}, index) => {
       if (REBOOT.has(row.kind)) rebootIndexes.push(index);
       if (row.kind === 'bugcheck_report' || row.bugcheckCode !== null) bugcheckIndexes.push(index);
-      return {...row, ...(MARKERS.has(row.kind) ? around(micros, context, times) : {})};
+      return {...row, ...(REBOOT.has(row.kind) ? around(micros, context, times) : {})};
     });
     return {
       source: data.source, channels: {...data.channels}, timeline, rebootIndexes,
