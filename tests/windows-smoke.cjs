@@ -93,6 +93,20 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       await visible('#results');
       assert.match(await page.locator('#reboot').innerText(), /1/);
       assert.match(await page.locator('#bugcheck').innerText(), /Unknown|未知/);
+      const envelope = {schema_version: 2, source: 'synthetic_fixture', window_days: 7,
+        channels: {System: 'complete', Application: 'complete'}};
+      const wer = {reported_at: '2026-01-02T12:00:00Z', channel: 'System',
+        provider: 'Microsoft-Windows-WER-SystemErrorReporting', event_id: 1001};
+      const kp = {...wer, provider: 'Microsoft-Windows-Kernel-Power', event_id: 41, bugcheck_code: 0};
+      for (const [events, count] of [[[wer], 1], [[wer, kp], 2]]) {
+        await page.locator('#summary-file').setInputFiles({name: 'synthetic-restarts.json',
+          mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({...envelope, events}))});
+        await visible('#results');
+        assert.match(await page.locator('#reboot').innerText(), new RegExp(String(count) + ' (?:records?|条记录)'));
+        assert.match(await page.locator('#bugcheck').innerText(), /1 (?:records?|条记录)/);
+        assert.equal(await page.locator('#timeline > li').count(), count);
+      }
+      console.log(lang + ': WER-only report confirms restart and blue-screen evidence; combined result counts records');
       await page.locator('#clear').click();
       await hidden('#results');
       assert.deepEqual(unexpected, []);
