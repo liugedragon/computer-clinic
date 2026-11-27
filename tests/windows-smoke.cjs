@@ -39,6 +39,51 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       });
       await page.locator('#message.error').waitFor();
       assert.doesNotMatch(await page.locator('#findings').innerText(), /reports 1 enabled|报告有 1 个/);
+      const networkSummary = ipv6 => JSON.stringify({
+        version: 1, adapters: 'ok', up: 1, ipv4: 1, route4: 0, pair4: 0,
+        ipv6, route6: ipv6, pair6: ipv6
+      });
+      const headline = page.locator('#result-title');
+      const next = page.locator('#next');
+      const recheckSummary = /summary shows no candidate network configuration|摘要未显示可用的候选联网配置/;
+      for (const [scope, symptom, normal] of [
+        ['one', /one failing app or site|仅一个应用或网站失败/, /limited to one app or website|局限于一个应用或网站/],
+        ['portal', /sign-in prompt|你看到了登录提示/, /public network may require sign-in|公共网络需要登录/]
+      ]) {
+        for (const mode of ['paste', 'file']) for (const ipv6 of [0, null, 1]) {
+          await page.locator('#quick-' + scope).click();
+          const value = networkSummary(ipv6);
+          if (mode === 'paste') {
+            await page.locator('#quick-paste').click();
+            await page.locator('#snapshot').fill(value);
+            await page.locator('#load').click();
+          } else {
+            await page.locator('#snapshot-file').setInputFiles({
+              name: 'synthetic-network.json', mimeType: 'application/json', buffer: Buffer.from(value)
+            });
+            await page.locator('#message').filter({hasText: /selected file was loaded|已导入所选文件/}).waitFor();
+          }
+          if (ipv6 === 0) {
+            assert.match(await headline.innerText(), symptom);
+            assert.match(await headline.innerText(), recheckSummary);
+            assert.match(await next.innerText(), /fresh summary from this PC|重新获取这台电脑/);
+          } else {
+            assert.match(await headline.innerText(), normal);
+            assert.doesNotMatch(await headline.innerText(), recheckSummary);
+          }
+          const ipv6Finding = (await page.locator('#findings li').allTextContents())
+            .find(line => /^IPv6[:：]/.test(line));
+          assert.ok(ipv6Finding);
+          if (ipv6 === null) assert.equal((ipv6Finding.match(/unavailable|未取得/g) || []).length, 3);
+          else assert.deepEqual(ipv6Finding.slice(5).match(/\d+/g), Array(3).fill(String(ipv6)));
+        }
+      }
+      await page.locator('#quick-all').click();
+      await page.locator('#quick-paste').click();
+      await page.locator('#snapshot').fill(networkSummary(0));
+      await page.locator('#load').click();
+      assert.match(await headline.innerText(), /No default route was found|没有观测到默认路由/);
+      console.log(lang + ': conflicting symptoms, incomplete and positive IPv6, and full outage passed for network summary');
       await open('keyboard/index.html');
       await page.locator('#start').click();
       assert.equal(await page.locator('#stop').isEnabled(), true);
