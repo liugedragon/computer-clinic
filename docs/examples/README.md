@@ -5,6 +5,7 @@
 These files contain made-up data. They do not describe your PC. Open the files from the extracted project folder; no system-log collector is included.
 
 - **Network:** Open `index.html`, choose **Only one app or website cannot connect**, then select [network-v1.json](network-v1.json) in the optional summary section. The summary shows one connected adapter with an IPv4 address and default route. The advice should still focus on the affected app or website, not a network reset.
+- **Conflicting network clues:** Keep **Only one app or website cannot connect** selected, then import [network-no-default-route-v1.json](network-no-default-route-v1.json). This sample reports a connected adapter with an IPv4 address, but no default route in either address family. Expect the result to show the selected symptom and the missing connection configuration together, and ask you to check other apps and take a fresh summary on the same PC. If you switch the symptom to **Most apps cannot connect**, expect the result to say no default route was found. The summary alone does not test internet access.
 - **Freezes and restarts:** Open `freeze/index.html` and select [restarts-v2.json](restarts-v2.json). Expect one restart-related record, unknown blue-screen evidence, and a storage event reported five seconds before the restart-related record. The time difference alone does not establish a cause.
 - **Restart with blue-screen evidence:** On the same page, select [restarts-wer-only-v2.json](restarts-wer-only-v2.json). Its single Windows Error Reporting event should appear as one restart-related record, one blue-screen record, and one timeline entry. The event does not identify the cause of the crash.
 
@@ -15,6 +16,7 @@ If you prepare your own v2 restart summary, give each `reported_at` an explicit 
 这些文件都是虚构数据，不代表你的电脑。请从解压后的项目目录选择文件，本项目不附带系统日志采集器。
 
 - **断网排查：** 打开 `zh/index.html`，选择「只有一个应用或网页打不开」，再在摘要导入区选择 [network-v1.json](network-v1.json)。摘要显示一个带 IPv4 地址和默认路由的已连接网卡，建议仍应优先排查出问题的应用或网站，不是重置网络。
+- **网络线索不一致：** 保持「只有一个应用或网页打不开」，再导入 [network-no-default-route-v1.json](network-no-default-route-v1.json)。样例有已连接网卡和 IPv4 地址，但 IPv4 和 IPv6 都没有默认路由。界面应同时显示你选的现象和摘要里的配置线索，并建议在同一台电脑上检查其他应用、重新获取摘要。若切换为「大多数应用打不开」，结果应提示未观测到默认路由。摘要本身不验证能否上网。
 - **卡死与重启：** 打开 `zh/freeze/index.html`，选择 [restarts-v2.json](restarts-v2.json)。应看到一条重启相关记录、蓝屏证据未知，以及早五秒报时的存储事件。报时接近不代表存在因果关系。
 - **重启并有蓝屏证据：** 在同一页面选择 [restarts-wer-only-v2.json](restarts-wer-only-v2.json)。这条 Windows 错误报告应显示为一条重启相关记录、一条蓝屏记录，时间线也只有一项。它不能说明蓝屏原因。
 
