@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "adapters": "ok",
+  "up": 1,
+  "ipv4": 1,
+  "ipv6": 0,
+  "route4": 0,
+  "route6": 0,
+  "pair4": 0,
+  "pair6": 0
+}
