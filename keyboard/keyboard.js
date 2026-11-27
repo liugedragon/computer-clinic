@@ -142,9 +142,17 @@
 
   function onKeyDown(event) {
     if (!active || event.target !== capture || document.activeElement !== capture ||
-        composing || event.isComposing || event.keyCode === 229 || event.repeat) return;
+        composing || event.isComposing || event.keyCode === 229) return;
     const cell = cells.get(event.code);
     if (!cell || (cell.isNumpad && numGrid.hidden)) return;
+    // Do not prevent Tab, function keys, browser/system modifier shortcuts,
+    // or any IME operation. Suppress only plain in-page scrolling where useful.
+    if (!event.ctrlKey && !event.altKey && !event.metaKey &&
+        ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "PageUp", "PageDown", "Home", "End"].includes(event.code)) {
+      event.preventDefault();
+    }
+    // Repeated scrolling keys still need their default action suppressed.
+    if (event.repeat) return;
     if (!held.has(event.code)) {
       held.add(event.code);
       seen.add(event.code);
@@ -155,12 +163,6 @@
     if (event.code === "Escape" && !event.ctrlKey && !event.altKey && !event.metaKey) {
       pause(msg("按下 Esc。", "Esc was pressed."));
       start.focus({preventScroll: true});
-    }
-    // Do not prevent Tab, function keys, browser/system modifier shortcuts,
-    // or any IME operation. Suppress only plain in-page scrolling where useful.
-    if (!event.ctrlKey && !event.altKey && !event.metaKey &&
-        ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "PageUp", "PageDown", "Home", "End"].includes(event.code)) {
-      event.preventDefault();
     }
   }
 
