@@ -98,12 +98,16 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       const wer = {reported_at: '2026-01-02T12:00:00Z', channel: 'System',
         provider: 'Microsoft-Windows-WER-SystemErrorReporting', event_id: 1001};
       const kp = {...wer, provider: 'Microsoft-Windows-Kernel-Power', event_id: 41, bugcheck_code: 0};
-      for (const [events, count] of [[[wer], 1], [[wer, kp], 2]]) {
+      const laterWer = {...wer, reported_at: '2026-01-03T12:00:00Z'};
+      const recordCount = count => lang === 'en' ? (count === 1 ? '1 record' : `${count} records`) : `${count} 条记录`;
+      for (const [events, count, blueScreens] of [[[wer], 1, 1], [[wer, kp], 2, 1], [[wer, laterWer], 2, 2]]) {
         await page.locator('#summary-file').setInputFiles({name: 'synthetic-restarts.json',
           mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({...envelope, events}))});
         await visible('#results');
-        assert.match(await page.locator('#reboot').innerText(), new RegExp(String(count) + ' (?:records?|条记录)'));
-        assert.match(await page.locator('#bugcheck').innerText(), /1 (?:records?|条记录)/);
+        assert.equal(await page.locator('#reboot').innerText(), lang === 'en' ?
+          `Markers found (${recordCount(count)})` : `有标记（${recordCount(count)}）`);
+        assert.equal(await page.locator('#bugcheck').innerText(), lang === 'en' ?
+          `Evidence found (${recordCount(blueScreens)})` : `有证据（${recordCount(blueScreens)}）`);
         assert.equal(await page.locator('#timeline > li').count(), count);
       }
       console.log(lang + ': WER-only report confirms restart and blue-screen evidence; combined result counts records');
