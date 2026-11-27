@@ -34,6 +34,8 @@ The browser preview is designed to run locally. It does not upload or persist di
 
 This is an early preview. [Offline browser tests](https://github.com/liugedragon/computer-clinic/actions/runs/45870061415) passed in Microsoft Edge on GitHub-hosted Windows Server 2025 and Ubuntu 24.04, in English and Simplified Chinese. They cover sample network and restart imports, simulated keystrokes, and fullscreen color rendering. They do not cover physical Windows 11 PCs, keyboards, monitor panels, or real system logs.
 
+The two network pages were also tested offline in Playwright Firefox 153.0 on Debian 13.7. The check covered light and dark styles, symptom selection, importing a sample file, pasting a conflicting summary, and clearing the result. This does not cover distribution Firefox builds or the other tools.
+
 ## Contribute
 
 If it helps, a **Star** is appreciated. [Issues](https://github.com/liugedragon/computer-clinic/issues) and pull requests are welcome. Good first contributions include clearer troubleshooting steps, keyboard layout coverage, and synthetic regression cases. See the [contribution guide](CONTRIBUTING.md).
