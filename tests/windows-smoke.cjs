@@ -137,6 +137,37 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       await page.locator('#reset').click();
       assert.equal((await page.locator('#seen').innerText()).trim(), '0');
       console.log(lang + ': keyboard repeats do not scroll or add marks; shortcuts, composition, pause and reset checked');
+      // Verify leaving capture with only the keyboard, not a pointer or element.focus().
+      await open('keyboard/index.html');
+      const activeId = () => page.evaluate(() => document.activeElement.id);
+      for (let i = 0; i < 8 && await activeId() !== 'start'; i++) {
+        await page.keyboard.press('Tab');
+      }
+      assert.equal(await activeId(), 'start');
+      await page.keyboard.press('Enter');
+      assert.equal(await activeId(), 'capture');
+      await page.keyboard.press('Shift+Tab');
+      assert.notEqual(await activeId(), 'capture');
+      assert.equal(await page.locator('#stop').isEnabled(), false);
+      assert.match(await page.locator('#status').innerText(), /Paused|已暂停/);
+
+      for (let i = 0; i < 8 && await activeId() !== 'start'; i++) {
+        await page.keyboard.press('Tab');
+      }
+      assert.equal(await activeId(), 'start');
+      await page.keyboard.press('Enter');
+      assert.equal(await activeId(), 'capture');
+      await page.keyboard.down('a');
+      await visible('[data-code="KeyA"].down');
+      await page.keyboard.press('Escape');
+      assert.equal(await activeId(), 'start');
+      assert.equal(await page.locator('#start').isEnabled(), true);
+      assert.equal(await page.locator('#stop').isEnabled(), false);
+      assert.equal(await page.locator('.key.down').count(), 0);
+      await page.keyboard.up('a');
+      await page.keyboard.press('b');
+      assert.equal(await page.locator('[data-code="KeyB"].done').count(), 0);
+      console.log(lang + ': keyboard-only start, Shift+Tab leaves and pauses, Escape clears held keys and restores focus');
       await open('display/index.html');
       await page.locator('#start').click();
       await visible('#testStage');
