@@ -73,6 +73,16 @@
     const paired = v?.pair4 > 0 || v?.pair6 > 0;
     const full = v?.pair4 !== null && v?.pair6 !== null;
     if (shared) return result('shared', msg('另一台设备也失败，先排查两台设备共用的网络', "Another device also fails. Check the shared network first."), sharedNext, Q.scope);
+    const missingPath = v?.adapters === 'ok' && (v.up === 0 || (full && !paired));
+    if (missingPath && ['one', 'portal'].includes(ans.scope)) {
+      const one = ans.scope === 'one';
+      return result('recheck-summary', one
+        ? msg('你选择了仅一个应用或网站失败，但摘要未显示可用的候选联网配置', "You selected one failing app or site, but the summary shows no candidate network configuration")
+        : msg('你看到了登录提示，但摘要未显示可用的候选联网配置', "You saw a sign-in prompt, but the summary shows no candidate network configuration"),
+        one
+          ? msg('先确认同一台电脑、同一个网络上的其他应用现在能否联网。然后重新获取这台电脑的摘要，避免混用另一台设备或另一时间的记录。', "Check whether other apps can get online now on this PC and network. Then collect a fresh summary from this PC, so the clues describe the same device and time.")
+          : msg('在系统的 Wi-Fi 设置中确认当前连接，再重新获取这台电脑的摘要。登录提示并不说明互联网可达；仅在确认提示属于这个网络且没有证书警告时登录。', "Confirm the current connection in your Wi-Fi settings, then collect a fresh summary from this PC. A sign-in prompt does not prove internet access. Only sign in after verifying the prompt belongs to this network and there is no certificate warning."), Q.other);
+    }
     if (v?.adapters === 'ok' && v.up === 0) {
       return result('no-link', msg('系统未报告已连接的网络适配器', "No connected network adapter was reported"),
         ans.path === 'wifi' ? msg('打开系统的 Wi-Fi 设置（Windows 或 Linux 桌面均可），确认 Wi-Fi 已开启、飞行模式已关闭，目标网络显示已连接。', "Open your Wi-Fi settings on Windows or your Linux desktop. Check that Wi-Fi is on, airplane mode is off, and you are connected to the intended network.")
