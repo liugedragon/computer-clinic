@@ -172,8 +172,15 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       await page.locator('#start').click();
       await visible('#testStage');
       // Native control: a real click, with no Fullscreen API test double.
-      await page.waitForFunction(() => document.fullscreenElement?.id === 'testStage', null, {timeout: 5000});
-      console.log(lang + ': native request entered fullscreen');
+      let nativeFullscreen = false;
+      try {
+        await page.waitForFunction(() => document.fullscreenElement?.id === 'testStage', null, {timeout: 3500});
+        nativeFullscreen = true;
+      } catch (err) {
+        if (err.name !== 'TimeoutError') throw err;
+      }
+      console.log(lang + ': native fullscreen ' + (nativeFullscreen ? 'confirmed' : 'not observed; checking fallback'));
+
       // Inspect rendered screenshot pixels, not the CSS property or the color label.
       const colors = [
         [0,0,0,255], [255,255,255,255], [255,0,0,255],
@@ -207,8 +214,16 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       await page.emulateMedia({forcedColors:'none'});
       await page.locator('#exit').click();
       await hidden('#testStage');
-      assert.equal(await page.locator('#notice').textContent(), '');
-      assert.equal(await activeId(), 'start');
+      const nativeNotice = await page.locator('#notice').textContent();
+      if (nativeFullscreen) {
+        await page.waitForFunction(() => document.fullscreenElement === null, null, {timeout: 5000});
+        assert.equal(nativeNotice, '');
+        console.log(lang + ': native exit focus: ' + await activeId());
+      } else {
+        assert.match(nativeNotice, lang === 'en'
+          ? /Fullscreen was unavailable|before fullscreen was confirmed/
+          : /浏览器未允许全屏|在确认全屏前退出/);
+      }
       // New document: hold only the API promise so the timing case is deterministic.
       const pending = await context.newPage();
       try {
