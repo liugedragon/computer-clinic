@@ -34,7 +34,8 @@
       msg('有标记（', "Markers found (") + recordCount(report.rebootIndexes.length) + msg('）', ")") : msg('未知', "Unknown");
     $('bugcheck').textContent = report.bugcheckEvidence === 'observed' ?
       msg('有证据（', "Evidence found (") + recordCount(report.bugcheckIndexes.length) + msg('）', ")") : msg('未知', "Unknown");
-    $('coverage').textContent = 'System：' + coverage[report.channels.System] +
+    $('coverage').textContent = (fromBuiltInDemo ? '' : msg('摘要中的查询状态：', "Query status reported by the summary: ")) +
+      'System：' + coverage[report.channels.System] +
       '；Application：' + coverage[report.channels.Application] + '。';
     const list = document.createDocumentFragment();
     report.timeline.forEach((row, index) => {
@@ -80,6 +81,10 @@
       render(core.analyze(bytes));
     } catch (e) {
       if (seq !== request) return;
+      if (e instanceof core.WindowSpanError) {
+        reset(msg('事件时间跨度超过摘要标注的 7 天，未生成诊断。', "The event times span more than the declared 7 days. No diagnosis was generated."));
+        return;
+      }
       reset(e instanceof core.InputError ? e.message : msg('无法读取这份摘要。', "Could not read the summary."));
     }
   });
