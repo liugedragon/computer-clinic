@@ -21,6 +21,7 @@
   let recording = false;
   let enteredFullscreen = false;
   let fullscreenPending = false;
+  let session = 0;
   let fallback = false;
   let lastColorChange = -Infinity;
 
@@ -56,6 +57,18 @@
     }
   }
 
+  function restoreFocusAfterFullscreen(exit, closedSession) {
+    const restore = () => requestAnimationFrame(() => {
+      if (active || session !== closedSession || document.fullscreenElement) return;
+      const focused = document.activeElement;
+      // Keep any focus the user already moved to a visible control.
+      if (!focused || focused === document.body || stage.contains(focused)) {
+        start.focus({preventScroll: true});
+      }
+    });
+    Promise.resolve(exit).then(restore, restore);
+  }
+
   function finish() {
     if (!active) return;
     const hadFullscreen = enteredFullscreen || document.fullscreenElement === stage;
@@ -72,7 +85,7 @@
       );
     }
     if (document.fullscreenElement === stage && typeof document.exitFullscreen === "function") {
-      Promise.resolve(document.exitFullscreen()).catch(() => {});
+      restoreFocusAfterFullscreen(document.exitFullscreen(), session);
     }
     report();
     start.focus({preventScroll: true});
@@ -80,6 +93,7 @@
 
   async function begin() {
     if (active || fullscreenPending) return;
+    ++session;
     active = true;
     fallback = false;
     enteredFullscreen = false;
@@ -105,7 +119,9 @@
     try {
       await stage.requestFullscreen();
       if (!active && document.fullscreenElement === stage) {
-        await document.exitFullscreen();
+        const exit = document.exitFullscreen();
+        restoreFocusAfterFullscreen(exit, session);
+        await exit;
       } else if (active) {
         enteredFullscreen = document.fullscreenElement === stage;
         fallback = !enteredFullscreen;
