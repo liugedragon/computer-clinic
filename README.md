@@ -32,7 +32,7 @@ Network guidance, keyboard testing, and solid-color display checks are browser t
 
 The browser preview is designed to run locally. It does not upload or persist diagnostic data, change settings, or include an executable or system-log collector. Imported data is optional. Read [what the app does with your data](docs/privacy.md) before sharing a report.
 
-This is an early preview. [Offline browser tests](https://github.com/liugedragon/computer-clinic/actions/runs/45870061415) passed in Microsoft Edge on GitHub-hosted Windows Server 2025 and Ubuntu 24.04, in English and Simplified Chinese. They cover sample network and restart imports, simulated keystrokes, and fullscreen color rendering. They do not cover physical Windows 11 PCs, keyboards, monitor panels, or real system logs.
+This is an early preview. The latest [offline Edge checks](https://github.com/liugedragon/computer-clinic/actions/runs/46113169840) passed in English and Simplified Chinese on GitHub-hosted Windows Server 2025 and Ubuntu 24.04. Both runners checked sample imports, simulated keys, six rendered colors and the warning shown when fullscreen has not been confirmed. Ubuntu also verified native fullscreen and focus restoration after exiting; the Windows runner used the browser viewport instead. This is not a Windows 11, hardware or real-log test. See the [Windows 11 manual checklist](docs/windows-checklist.md) for what still needs a real PC.
 
 The two network pages were also tested offline in Playwright Firefox 153.0 on Debian 13.7. The check covered light and dark styles, symptom selection, importing a sample file, pasting a conflicting summary, and clearing the result. This does not cover distribution Firefox builds or the other tools.
 
