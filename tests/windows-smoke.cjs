@@ -171,8 +171,9 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       await open('display/index.html');
       await page.locator('#start').click();
       await visible('#testStage');
-      console.log(lang + ': observed browser fullscreen: ' +
-        await page.evaluate(() => document.fullscreenElement?.id === 'testStage'));
+      // Native control: a real click, with no Fullscreen API test double.
+      await page.waitForFunction(() => document.fullscreenElement?.id === 'testStage', null, {timeout: 5000});
+      console.log(lang + ': native request entered fullscreen');
       // Inspect rendered screenshot pixels, not the CSS property or the color label.
       const colors = [
         [0,0,0,255], [255,255,255,255], [255,0,0,255],
@@ -206,6 +207,60 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       await page.emulateMedia({forcedColors:'none'});
       await page.locator('#exit').click();
       await hidden('#testStage');
+      assert.equal(await page.locator('#notice').textContent(), '');
+      assert.equal(await activeId(), 'start');
+      // New document: hold only the API promise so the timing case is deterministic.
+      const pending = await context.newPage();
+      try {
+        pending.on('pageerror', error => unexpected.push(error.message));
+        pending.on('request', req => {
+          if (!req.url().startsWith('file:')) unexpected.push('External request: ' + req.url());
+        });
+        await pending.addInitScript(() => {
+          let reject;
+          let calls = 0;
+          Object.defineProperty(Element.prototype, 'requestFullscreen', {
+            configurable: true, value() {
+              ++calls;
+              return new Promise((_, fail) => { reject = fail; });
+            }
+          });
+          window.clinicFullscreenTest = {
+            count: () => calls,
+            reject: () => reject(new DOMException('Simulated fullscreen rejection', 'NotAllowedError'))
+          };
+        });
+        await pending.goto(pathToFileURL(path.join(root, prefix + 'display/index.html')).href, {waitUntil:'load'});
+        assert.equal(await pending.locator('html').getAttribute('lang'), lang);
+        const stage = pending.locator('#testStage');
+        const start = pending.locator('#start');
+        const notice = pending.locator('#notice');
+        const early = lang === 'en' ? /before fullscreen was confirmed/ : /在确认全屏前退出/;
+        for (const [i, mode] of ['Escape', 'button'].entries()) {
+          await start.click();
+          await stage.waitFor({state:'visible'});
+          assert.equal(await pending.evaluate(() => window.clinicFullscreenTest.count()), i + 1);
+          if (mode === 'Escape') await pending.keyboard.press('Escape');
+          else await pending.locator('#exit').click();
+          await stage.waitFor({state:'hidden'});
+          await pending.locator('#review').waitFor({state:'visible'});
+          assert.equal(await pending.evaluate(() => document.activeElement.id), 'start');
+          assert.match(await notice.textContent(), early);
+          await pending.evaluate(() => window.clinicFullscreenTest.reject());
+          assert.match(await notice.textContent(), early);
+        }
+        await start.click();
+        await stage.waitFor({state:'visible'});
+        assert.equal(await pending.evaluate(() => window.clinicFullscreenTest.count()), 3);
+        assert.equal(await notice.textContent(), '');
+        await pending.evaluate(() => window.clinicFullscreenTest.reject());
+        await pending.locator('#exit').click();
+        await stage.waitFor({state:'hidden'});
+        assert.match(await notice.textContent(), lang === 'en' ? /Fullscreen was unavailable/ : /浏览器未允许全屏/);
+        console.log(lang + ': simulated pending fullscreen, Escape and Exit, stable warning, focus and restart passed');
+      } finally {
+        await pending.close();
+      }
       await open('freeze/index.html');
       await page.locator('#summary-file').setInputFiles(sample('restarts-v2'));
       await visible('#results');

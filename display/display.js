@@ -58,12 +58,19 @@
 
   function finish() {
     if (!active) return;
+    const hadFullscreen = enteredFullscreen || document.fullscreenElement === stage;
     active = false;
     enteredFullscreen = false;
     stage.hidden = true;
     home.inert = false;
     document.body.classList.remove("testing");
     if (fallback) $("notice").textContent = msg("浏览器未允许全屏，已在浏览器视口内完成检查。", "Fullscreen was unavailable. The test covered only the browser area.");
+    else if (fullscreenPending && !hadFullscreen) {
+      $("notice").textContent = msg(
+        "你在确认全屏前退出。此轮只显示了浏览器视口，未检查整个屏幕。",
+        "You exited before fullscreen was confirmed. This test showed only the browser area."
+      );
+    }
     if (document.fullscreenElement === stage && typeof document.exitFullscreen === "function") {
       Promise.resolve(document.exitFullscreen()).catch(() => {});
     }
