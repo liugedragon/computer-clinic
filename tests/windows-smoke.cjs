@@ -309,6 +309,27 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
         assert.equal(await page.locator('#timeline > li').count(), count);
       }
       console.log(lang + ': WER-only report confirms restart and blue-screen evidence; combined result counts records');
+      const file = page.locator('#summary-file');
+      const dated = (date) => ({...wer, reported_at: date});
+      const first = dated('2025-01-02T00:00:00.123456Z');
+      const inWindow = dated('2025-01-09T08:00:00.123456+08:00');
+      const outsideWindow = dated('2025-01-09T08:00:00.123457+08:00');
+      const loadRange = (events) => file.setInputFiles({name: 'synthetic-range.json',
+        mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({...envelope, events}))});
+      await loadRange([inWindow, first]);
+      await visible('#results');
+      assert.equal(await page.locator('#timeline > li').count(), 2);
+      assert.match(await page.locator('#coverage').textContent(),
+        lang === 'en' ? /Query status reported by the summary/ : /摘要中的查询状态/);
+      await loadRange([outsideWindow, first]);
+      await page.waitForFunction(() => /more than the declared 7 days|时间跨度超过摘要标注的 7 天/.test(
+        document.getElementById('status').textContent));
+      await hidden('#results');
+      assert.equal(await page.locator('#timeline > li').count(), 0);
+      await loadRange([first]);
+      await visible('#results');
+      assert.equal(await page.locator('#timeline > li').count(), 1);
+      console.log(lang + ': restart summary accepts exactly 7 days, rejects 7 days plus one microsecond, and accepts a historical single record');
       await page.locator('#clear').click();
       await hidden('#results');
       assert.deepEqual(unexpected, []);

@@ -31,6 +31,7 @@
   const TS = /^(20\d\d|2100)-(\d{2})-(\d{2})T([01]\d|2[0-3]):([0-5]\d):([0-5]\d)(?:\.(\d{1,6}))?(Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/;
 
   class InputError extends Error {}
+  class WindowSpanError extends InputError {}
 
   function exactKeys(o, keys) {
     return o !== null && typeof o === 'object' && !Array.isArray(o) &&
@@ -161,6 +162,9 @@
       }
       return row;
     }).sort((a, b) => a.micros - b.micros);
+    if (rows.length > 1 && rows[rows.length - 1].micros - rows[0].micros > WINDOW_DAYS * 86400 * 1000000) {
+      throw new WindowSpanError('事件时间跨度超过摘要标注的 7 天。');
+    }
     const context = rows.flatMap((e, i) => CONTEXT.has(e.kind) ? [{index: i, micros: e.micros}] : []);
     const times = context.map(e => e.micros);
     const rebootIndexes = [], bugcheckIndexes = [];
@@ -192,5 +196,5 @@
     })));
   }
 
-  return Object.freeze({analyze, demo, InputError, MAX_BYTES, MAX_PER_CHANNEL, WINDOW_SECONDS, MAX_CONTEXT});
+  return Object.freeze({analyze, demo, InputError, WindowSpanError, MAX_BYTES, MAX_PER_CHANNEL, WINDOW_SECONDS, MAX_CONTEXT});
 });
