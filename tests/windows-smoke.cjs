@@ -218,7 +218,17 @@ const sample = kind => path.join(root, 'docs', 'examples', kind + '.json');
       if (nativeFullscreen) {
         await page.waitForFunction(() => document.fullscreenElement === null, null, {timeout: 5000});
         assert.equal(nativeNotice, '');
-        console.log(lang + ': native exit focus: ' + await activeId());
+        await page.waitForFunction(() => document.activeElement?.id === 'start', null, {timeout: 3000});
+        // Second native path: exit through the original browser API, not the app button.
+        await page.locator('#start').click();
+        await visible('#testStage');
+        await page.waitForFunction(() => document.fullscreenElement?.id === 'testStage', null, {timeout: 3500});
+        await page.evaluate(() => document.exitFullscreen());
+        await hidden('#testStage');
+        await visible('#review');
+        assert.equal(await page.locator('#notice').textContent(), '');
+        await page.waitForFunction(() => document.activeElement?.id === 'start', null, {timeout: 3000});
+        console.log(lang + ': native button exit and Fullscreen API exit restored Start focus');
       } else {
         assert.match(nativeNotice, lang === 'en'
           ? /Fullscreen was unavailable|before fullscreen was confirmed/
